@@ -8,7 +8,8 @@ namespace GitPluginShared.Commands
         {
             string[] arguments = null;
 
-            if (item.DTE.ActiveDocument.Selection is TextSelection textSelection)
+            var textSelection = item.DTE.ActiveDocument.Selection as TextSelection;
+            if (textSelection != null)
             {
                 arguments = new[] { textSelection.CurrentLine.ToString() };
             }

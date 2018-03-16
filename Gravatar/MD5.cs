@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Gravatar
 {
-    public static class MD5
+    public class MD5
     {
         /// <summary>
         ///   Small MD5 Function

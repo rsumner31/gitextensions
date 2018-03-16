@@ -308,7 +308,7 @@ namespace GitUI.Editor.RichTextBoxExtension
         }
 
         #region Win32 Apis
-        internal static class NativeMethods
+        internal class NativeMethods
         {
             // Constants from the Platform SDK.
             internal const int WM_USER = 0x0400;
@@ -1179,11 +1179,9 @@ namespace GitUI.Editor.RichTextBoxExtension
             IntPtr oldMask = BeginUpdate(handleRef);
             SetHideSelectionInternal(handleRef, true);
 
-            var settings = new XmlReaderSettings
-            {
-                ConformanceLevel = ConformanceLevel.Fragment,
-                CheckCharacters = false
-            };
+            XmlReaderSettings settings = new XmlReaderSettings();
+            settings.ConformanceLevel = ConformanceLevel.Fragment;
+            settings.CheckCharacters = false;
 
             try
             {
@@ -1495,7 +1493,8 @@ namespace GitUI.Editor.RichTextBoxExtension
 
             rtb.HideSelection = true;
 
-            var settings = new XmlReaderSettings { ConformanceLevel = ConformanceLevel.Fragment };
+            XmlReaderSettings settings = new XmlReaderSettings();
+            settings.ConformanceLevel = ConformanceLevel.Fragment;
 
             try
             {

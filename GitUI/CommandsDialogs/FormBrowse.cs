@@ -478,15 +478,18 @@ namespace GitUI.CommandsDialogs
         {
             var menuItem = sender as ToolStripMenuItem;
 
-            if (menuItem?.Tag is IGitPlugin plugin)
+            var plugin = menuItem?.Tag as IGitPlugin;
+            if (plugin == null)
             {
-                var eventArgs = new GitUIEventArgs(this, UICommands);
+                return;
+            }
 
-                bool refresh = plugin.Execute(eventArgs);
-                if (refresh)
-                {
-                    RefreshToolStripMenuItemClick(null, null);
-                }
+            var eventArgs = new GitUIEventArgs(this, UICommands);
+
+            bool refresh = plugin.Execute(eventArgs);
+            if (refresh)
+            {
+                RefreshToolStripMenuItemClick(null, null);
             }
         }
 
@@ -494,7 +497,9 @@ namespace GitUI.CommandsDialogs
         {
             foreach (ToolStripItem item in pluginsToolStripMenuItem.DropDownItems)
             {
-                item.Enabled = !(item.Tag is IGitPluginForRepository) || validWorkingDir;
+                var plugin = item.Tag as IGitPluginForRepository;
+
+                item.Enabled = plugin == null || validWorkingDir;
             }
         }
 
@@ -764,25 +769,26 @@ namespace GitUI.CommandsDialogs
                 return;
             }
 
-            ToolStrip.Items.Add(new ToolStripSeparator { Tag = "userscript" });
+            ToolStripSeparator toolstripseparator = new ToolStripSeparator();
+            toolstripseparator.Tag = "userscript";
+            ToolStrip.Items.Add(toolstripseparator);
 
             foreach (ScriptInfo scriptInfo in scripts)
             {
-                var tempButton = new ToolStripButton
-                {
-                    // store scriptname
-                    Text = scriptInfo.Name,
-                    Tag = "userscript",
-                    Enabled = true,
-                    Visible = true,
-                    Image = scriptInfo.GetIcon(),
-                    DisplayStyle = ToolStripItemDisplayStyle.ImageAndText
-                    ////Image = GitUI.Properties.Resources.bug,
-                    ////Icon = "Cow"
-                };
+                ToolStripButton tempButton = new ToolStripButton();
+
+                // store scriptname
+                tempButton.Text = scriptInfo.Name;
+                tempButton.Tag = "userscript";
 
                 // add handler
                 tempButton.Click += UserMenu_Click;
+                tempButton.Enabled = true;
+                tempButton.Visible = true;
+                ////tempButton.Image = GitUI.Properties.Resources.bug;
+                ////scriptInfo.Icon = "Cow";
+                tempButton.Image = scriptInfo.GetIcon();
+                tempButton.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
 
                 // add to toolstrip
                 ToolStrip.Items.Add(tempButton);
@@ -1029,7 +1035,7 @@ namespace GitUI.CommandsDialogs
         {
             if (Module.InTheMiddleOfRebase())
             {
-                UICommands.StartTheContinueRebaseDialog(this);
+                UICommands.ContinueRebase(this);
             }
             else
             {
@@ -1529,7 +1535,8 @@ namespace GitUI.CommandsDialogs
 
         private void UpdateSubmoduleToolStripMenuItemClick(object sender, EventArgs e)
         {
-            if (sender is ToolStripMenuItem toolStripMenuItem)
+            var toolStripMenuItem = sender as ToolStripMenuItem;
+            if (toolStripMenuItem != null)
             {
                 var submodule = toolStripMenuItem.Tag as string;
                 FormProcess.ShowDialog(this, Module.SuperprojectModule, GitCommandHelpers.SubmoduleUpdateCmd(submodule));
@@ -1633,10 +1640,14 @@ namespace GitUI.CommandsDialogs
 
         private void HistoryItemMenuClick(object sender, EventArgs e)
         {
-            if (sender is ToolStripMenuItem button)
+            var button = sender as ToolStripMenuItem;
+
+            if (button == null)
             {
-                ChangeWorkingDir(button.Text);
+                return;
             }
+
+            ChangeWorkingDir(button.Text);
         }
 
         private void ClearRecentRepositoriesListClick(object sender, EventArgs e)
@@ -1999,37 +2010,30 @@ namespace GitUI.CommandsDialogs
 
         internal enum Commands
         {
-            GitBash = 0,
-            GitGui = 1,
-            GitGitK = 2,
-            FocusRevisionGrid = 3,
-            FocusCommitInfo = 4,
-            FocusFileTree = 5,
-            FocusDiff = 6,
-            FocusFilter = 18,
-            Commit = 7,
-            AddNotes = 8,
-            FindFileInSelectedCommit = 9,
-            CheckoutBranch = 10,
-            QuickFetch = 11,
-            QuickPull = 12,
-            QuickPush = 13,
-            RotateApplicationIcon = 14,
-            CloseRepository = 15,
-            Stash = 16,
-            StashPop = 17
+            GitBash,
+            GitGui,
+            GitGitK,
+            FocusRevisionGrid,
+            FocusCommitInfo,
+            FocusFileTree,
+            FocusDiff,
+            Commit,
+            AddNotes,
+            FindFileInSelectedCommit,
+            CheckoutBranch,
+            QuickFetch,
+            QuickPull,
+            QuickPush,
+            RotateApplicationIcon,
+            CloseRepository,
+            Stash,
+            StashPop
         }
 
         private void AddNotes()
         {
             Module.EditNotes(RevisionGrid.GetSelectedRevisions().Count > 0 ? RevisionGrid.GetSelectedRevisions()[0].Guid : string.Empty);
             FillCommitInfo();
-        }
-
-        private void FocusFilter()
-        {
-            ToolStripControlHost filterToFocus = toolStripRevisionFilterTextBox.Focused ? (ToolStripControlHost)toolStripBranchFilterComboBox : (ToolStripControlHost)toolStripRevisionFilterTextBox;
-            filterToFocus.Focus();
         }
 
         private void FindFileInSelectedCommit()
@@ -2057,7 +2061,6 @@ namespace GitUI.CommandsDialogs
                 case Commands.FocusCommitInfo: CommitInfoTabControl.SelectedTab = CommitInfoTabPage; break;
                 case Commands.FocusFileTree: CommitInfoTabControl.SelectedTab = TreeTabPage; fileTree.Focus(); break;
                 case Commands.FocusDiff: CommitInfoTabControl.SelectedTab = DiffTabPage; revisionDiff.Focus(); break;
-                case Commands.FocusFilter: FocusFilter(); break;
                 case Commands.Commit: CommitToolStripMenuItemClick(null, null); break;
                 case Commands.AddNotes: AddNotes(); break;
                 case Commands.FindFileInSelectedCommit: FindFileInSelectedCommit(); break;
@@ -2378,7 +2381,8 @@ namespace GitUI.CommandsDialogs
 
         private void SubmoduleToolStripButtonClick(object sender, EventArgs e)
         {
-            if (sender is ToolStripMenuItem menuSender)
+            var menuSender = sender as ToolStripMenuItem;
+            if (menuSender != null)
             {
                 SetWorkingDir(menuSender.Tag as string);
             }
@@ -2398,16 +2402,24 @@ namespace GitUI.CommandsDialogs
 
         private static void ToolStripSplitButtonDropDownClosed(object sender, EventArgs e)
         {
-            if (sender is ToolStripSplitButton control)
-            {
-                control.DropDownClosed -= ToolStripSplitButtonDropDownClosed;
+            var control = sender as ToolStripSplitButton;
 
-                if (control.Tag is Control controlToFocus)
-                {
-                    controlToFocus.Focus();
-                    control.Tag = null;
-                }
+            if (control == null)
+            {
+                return;
             }
+
+            control.DropDownClosed -= ToolStripSplitButtonDropDownClosed;
+
+            var controlToFocus = control.Tag as Control;
+
+            if (controlToFocus == null)
+            {
+                return;
+            }
+
+            controlToFocus.Focus();
+            control.Tag = null;
         }
 
         private void toolStripButtonLevelUp_DropDownOpening(object sender, EventArgs e)
@@ -2420,7 +2432,8 @@ namespace GitUI.CommandsDialogs
         {
             foreach (var item in toolStripButtonLevelUp.DropDownItems)
             {
-                if (item is ToolStripMenuItem toolStripButton)
+                var toolStripButton = item as ToolStripMenuItem;
+                if (toolStripButton != null)
                 {
                     toolStripButton.Click -= SubmoduleToolStripButtonClick;
                 }
@@ -2788,7 +2801,7 @@ namespace GitUI.CommandsDialogs
                     // Lazy-create on first opening the tab
                     tabpage.Controls.Clear();
                     tabpage.Controls.Add(
-                        _terminal = new ConEmuControl
+                        _terminal = new ConEmuControl()
                         {
                             Dock = DockStyle.Fill,
                             AutoStartInfo = null,
@@ -2884,7 +2897,7 @@ namespace GitUI.CommandsDialogs
 
         public void ChangeTerminalActiveFolder(string path)
         {
-            if (_terminal?.RunningSession == null || string.IsNullOrWhiteSpace(path))
+            if (_terminal == null || _terminal.RunningSession == null || string.IsNullOrWhiteSpace(path))
             {
                 return;
             }
@@ -2908,7 +2921,7 @@ namespace GitUI.CommandsDialogs
 
         private void ClearTerminalCommandLineAndRunCommand(string command)
         {
-            if (_terminal?.RunningSession == null || string.IsNullOrWhiteSpace(command))
+            if (_terminal == null || _terminal.RunningSession == null || string.IsNullOrWhiteSpace(command))
             {
                 return;
             }

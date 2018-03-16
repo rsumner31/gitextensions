@@ -3,7 +3,7 @@ using Microsoft.Win32;
 
 namespace GitUI
 {
-    public static class WebBrowserEmulationMode
+    public sealed class WebBrowserEmulationMode
     {
         public static void SetBrowserFeatureControl()
         {

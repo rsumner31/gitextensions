@@ -18,9 +18,9 @@ namespace GitPluginShared.Git
 
                 string value = "";
 
-                if (rk != null && rk.GetValue(key) is string str)
+                if (rk != null && rk.GetValue(key) is string)
                 {
-                    value = str;
+                    value = rk.GetValue(key).ToString();
                     rk.Flush();
                     rk.Close();
                 }

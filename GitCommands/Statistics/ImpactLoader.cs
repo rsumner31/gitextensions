@@ -44,12 +44,11 @@ namespace GitCommands.Statistics
 
             public static DataPoint operator +(DataPoint d1, DataPoint d2)
             {
-                return new DataPoint
-                {
-                    Commits = d1.Commits + d2.Commits,
-                    AddedLines = d1.AddedLines + d2.AddedLines,
-                    DeletedLines = d1.DeletedLines + d2.DeletedLines
-                };
+                DataPoint temp = new DataPoint();
+                temp.Commits = d1.Commits + d2.Commits;
+                temp.AddedLines = d1.AddedLines + d2.AddedLines;
+                temp.DeletedLines = d1.DeletedLines + d2.DeletedLines;
+                return temp;
             }
         }
 

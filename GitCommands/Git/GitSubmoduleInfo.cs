@@ -65,7 +65,7 @@ namespace GitCommands
 
         public override bool Equals(object obj)
         {
-            return obj is GitSubmoduleInfo info && this == info;
+            return obj is GitSubmoduleInfo && this == (GitSubmoduleInfo)obj;
         }
 
         public override int GetHashCode()

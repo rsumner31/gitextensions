@@ -305,7 +305,9 @@ namespace GitUI
 
         private void FileStatusListView_DrawItem(object sender, DrawListViewItemEventArgs e)
         {
-            if (e?.Item?.Tag is GitItemStatus gitItemStatus)
+            var gitItemStatus = e?.Item?.Tag as GitItemStatus;
+
+            if (gitItemStatus != null)
             {
                 var imageWidth = 0;
                 if (e.Item.ImageList != null && e.Item.ImageIndex != -1)
@@ -392,8 +394,14 @@ namespace GitUI
 
         public override ContextMenu ContextMenu
         {
-            get => FileStatusListView.ContextMenu;
-            set => FileStatusListView.ContextMenu = value;
+            get
+            {
+                return FileStatusListView.ContextMenu;
+            }
+            set
+            {
+                FileStatusListView.ContextMenu = value;
+            }
         }
 
         private Rectangle _dragBoxFromMouseDown;
@@ -441,7 +449,8 @@ namespace GitUI
                     hoveredItem = null;
                 }
 
-                if (hoveredItem?.Tag is GitItemStatus gitItemStatus)
+                var gitItemStatus = hoveredItem?.Tag as GitItemStatus;
+                if (gitItemStatus != null)
                 {
                     string text;
                     if (gitItemStatus.IsRenamed || gitItemStatus.IsCopied)
@@ -564,7 +573,13 @@ namespace GitUI
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         [Browsable(false)]
-        public GitRevision SelectedItemParent => SelectedItemParents.FirstOrDefault();
+        public GitRevision SelectedItemParent
+        {
+            get
+            {
+                return SelectedItemParents.FirstOrDefault();
+            }
+        }
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         [Browsable(false)]
@@ -573,7 +588,7 @@ namespace GitUI
             get
             {
                 return FileStatusListView.SelectedItems.Cast<ListViewItem>()
-                    .Where(i => i.Group?.Tag as GitRevision != null)
+                    .Where(i => i.Group != null && i.Group.Tag as GitRevision != null)
                     .Select(i => i.Group.Tag as GitRevision);
             }
         }
@@ -585,7 +600,7 @@ namespace GitUI
             get
             {
                 return FileStatusListView.SelectedItems.Cast<ListViewItem>()
-                    .Where(i => i.Group?.Tag as GitRevision != null)
+                    .Where(i => i.Group != null && i.Group.Tag as GitRevision != null)
                     .Select(i => new GitItemStatusWithParent(i.Group.Tag as GitRevision, i.Tag as GitItemStatus));
             }
         }
@@ -686,16 +701,10 @@ namespace GitUI
             SelectedItem.SubmoduleStatus.ContinueWith(
                 (t) =>
                 {
-                    Process process = new Process
-                    {
-                        StartInfo =
-                        {
-                            FileName = Application.ExecutablePath,
-                            Arguments = "browse -commit=" + t.Result.Commit,
-                            WorkingDirectory = _fullPathResolver.Resolve(submoduleName.EnsureTrailingPathSeparator())
-                        }
-                    };
-
+                    Process process = new Process();
+                    process.StartInfo.FileName = Application.ExecutablePath;
+                    process.StartInfo.Arguments = "browse -commit=" + t.Result.Commit;
+                    process.StartInfo.WorkingDirectory = _fullPathResolver.Resolve(submoduleName.EnsureTrailingPathSeparator());
                     process.Start();
                 });
         }
@@ -892,11 +901,8 @@ namespace GitUI
                         groupName = _diffWithParent.Text + " " + GetDescriptionForRevision(pair.Key.Guid);
                     }
 
-                    group = new ListViewGroup(groupName)
-                    {
-                        Tag = pair.Key
-                    };
-
+                    group = new ListViewGroup(groupName);
+                    group.Tag = pair.Key;
                     FileStatusListView.Groups.Add(group);
                 }
 
@@ -918,11 +924,8 @@ namespace GitUI
                             text = AppendItemSubmoduleStatus(text, item);
                         }
 
-                        var listItem = new ListViewItem(text, group)
-                        {
-                            ImageIndex = GetItemImageIndex(item)
-                        };
-
+                        var listItem = new ListViewItem(text, group);
+                        listItem.ImageIndex = GetItemImageIndex(item);
                         if (item.SubmoduleStatus != null && !item.SubmoduleStatus.IsCompleted)
                         {
                             var capturedItem = item;

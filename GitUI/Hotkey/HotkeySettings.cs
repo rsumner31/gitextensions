@@ -29,7 +29,13 @@ namespace GitUI.Hotkey
 
         public override bool Equals(object obj)
         {
-            return obj is HotkeySettings other && Commands.SequenceEqual(other.Commands);
+            HotkeySettings other = obj as HotkeySettings;
+            if (other == null)
+            {
+                return false;
+            }
+
+            return Commands.SequenceEqual(other.Commands);
         }
 
         public override int GetHashCode()

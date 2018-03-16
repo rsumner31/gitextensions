@@ -1313,20 +1313,17 @@ namespace GitCommands
 
         private static GitItemStatus GitItemStatusFromStatusCharacter(string fileName, char x)
         {
-            var isNew = x == 'A' || x == '?' || x == '!';
-
-            return new GitItemStatus
-            {
-                Name = fileName.Trim(),
-                IsNew = isNew,
-                IsChanged = x == 'M',
-                IsDeleted = x == 'D',
-                IsSkipWorktree = x == 'S',
-                IsRenamed = false,
-                IsTracked = (x != '?' && x != '!' && x != ' ') || !isNew,
-                IsIgnored = x == '!',
-                IsConflict = x == 'U'
-            };
+            var gitItemStatus = new GitItemStatus();
+            gitItemStatus.Name = fileName.Trim();
+            gitItemStatus.IsNew = x == 'A' || x == '?' || x == '!';
+            gitItemStatus.IsChanged = x == 'M';
+            gitItemStatus.IsDeleted = x == 'D';
+            gitItemStatus.IsSkipWorktree = x == 'S';
+            gitItemStatus.IsRenamed = false;
+            gitItemStatus.IsTracked = (x != '?' && x != '!' && x != ' ') || !gitItemStatus.IsNew;
+            gitItemStatus.IsIgnored = x == '!';
+            gitItemStatus.IsConflict = x == 'U';
+            return gitItemStatus;
         }
 
         public static string GetRemoteName(string completeName, IEnumerable<string> remotes)

@@ -121,20 +121,16 @@ namespace GitUI.CommandsDialogs
         {
             if (_navigateToolStripMenuItem == null)
             {
-                _navigateToolStripMenuItem = new ToolStripMenuItem
-                {
-                    Name = "navigateToolStripMenuItem",
-                    Text = "Navigate"
-                };
+                _navigateToolStripMenuItem = new ToolStripMenuItem();
+                _navigateToolStripMenuItem.Name = "navigateToolStripMenuItem";
+                _navigateToolStripMenuItem.Text = "Navigate";
             }
 
             if (_viewToolStripMenuItem == null)
             {
-                _viewToolStripMenuItem = new ToolStripMenuItem
-                {
-                    Name = "viewToolStripMenuItem",
-                    Text = "View"
-                };
+                _viewToolStripMenuItem = new ToolStripMenuItem();
+                _viewToolStripMenuItem.Name = "viewToolStripMenuItem";
+                _viewToolStripMenuItem.Text = "View";
             }
         }
 
@@ -154,7 +150,8 @@ namespace GitUI.CommandsDialogs
                 var toolStripItem = MenuCommand.CreateToolStripItem(menuCommand);
                 toolStripItems.Add(toolStripItem);
 
-                if (toolStripItem is ToolStripMenuItem toolStripMenuItem)
+                var toolStripMenuItem = toolStripItem as ToolStripMenuItem;
+                if (toolStripMenuItem != null)
                 {
                     menuCommand.RegisterMenuItem(toolStripMenuItem);
                     _itemsRegisteredWithMenuCommand.Add(toolStripMenuItem);

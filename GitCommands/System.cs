@@ -10,9 +10,7 @@ namespace System
         /// <summary>'\n'</summary>
         private static readonly char[] NewLineSeparator = { '\n' };
 
-        [Pure]
-        [CanBeNull]
-        public static string SkipStr([CanBeNull] this string str, [NotNull] string toSkip)
+        public static string SkipStr(this string str, string toSkip)
         {
             if (str == null)
             {
@@ -31,9 +29,7 @@ namespace System
             }
         }
 
-        [Pure]
-        [CanBeNull]
-        public static string TakeUntilStr([CanBeNull] this string str, [NotNull] string untilStr)
+        public static string TakeUntilStr(this string str, string untilStr)
         {
             if (str == null)
             {
@@ -52,9 +48,7 @@ namespace System
             }
         }
 
-        [Pure]
-        [NotNull]
-        public static string CommonPrefix([CanBeNull] this string s, [CanBeNull] string other)
+        public static string CommonPrefix(this string s, string other)
         {
             if (s.IsNullOrEmpty() || other.IsNullOrEmpty())
             {
@@ -76,15 +70,12 @@ namespace System
             return s;
         }
 
-        [Pure]
-        [ContractAnnotation("s:null=>true")]
-        public static bool IsNullOrEmpty([CanBeNull] this string s)
+        public static bool IsNullOrEmpty(this string s)
         {
             return string.IsNullOrEmpty(s);
         }
 
-        [Pure]
-        public static string Combine([CanBeNull] this string left, [NotNull] string sep, [CanBeNull] string right)
+        public static string Combine(this string left, string sep, string right)
         {
             if (left.IsNullOrEmpty())
             {
@@ -101,11 +92,17 @@ namespace System
         }
 
         /// <summary>
+        /// Quotes string if it is not null
+        /// </summary>
+        public static string Quote(this string s)
+        {
+            return s.Quote("\"");
+        }
+
+        /// <summary>
         /// Quotes this string with the specified <paramref name="quotationMark"/>
         /// </summary>
-        [Pure]
-        [NotNull]
-        public static string Quote([CanBeNull] this string s, [NotNull] string quotationMark = "\"")
+        public static string Quote(this string s, string quotationMark)
         {
             if (s == null)
             {
@@ -118,19 +115,15 @@ namespace System
         /// <summary>
         /// Quotes this string if it is not null and not empty
         /// </summary>
-        [Pure]
-        [ContractAnnotation("s:null=>null")]
-        public static string QuoteNE([CanBeNull] this string s)
+        public static string QuoteNE(this string s)
         {
-            return s.IsNullOrEmpty() ? s : s.Quote();
+            return s.IsNullOrEmpty() ? s : s.Quote("\"");
         }
 
         /// <summary>
         /// Adds parentheses if string is not null and not empty
         /// </summary>
-        [Pure]
-        [ContractAnnotation("s:null=>null")]
-        public static string AddParenthesesNE([CanBeNull] this string s)
+        public static string AddParenthesesNE(this string s)
         {
             return s.IsNullOrEmpty() ? s : "(" + s + ")";
         }
@@ -146,18 +139,15 @@ namespace System
         /// true if the value parameter is null or <see cref="string.Empty"/>, or if value consists exclusively of white-space characters.
         /// </returns>
         [Pure]
-        [ContractAnnotation("value:null=>true")]
         public static bool IsNullOrWhiteSpace([CanBeNull] this string value)
         {
             return string.IsNullOrWhiteSpace(value);
         }
 
         /// <summary>Indicates whether the specified string is neither null, nor empty, nor has only whitespace.</summary>
-        [Pure]
-        [ContractAnnotation("value:null=>false")]
         public static bool IsNotNullOrWhitespace([CanBeNull] this string value)
         {
-            return !string.IsNullOrWhiteSpace(value);
+            return !value.IsNullOrWhiteSpace();
         }
 
         /// <summary>
@@ -165,16 +155,12 @@ namespace System
         /// </summary>
         /// <param name="starts">array of strings to compare</param>
         /// <returns>true if any starts element matches the beginning of this string; otherwise, false.</returns>
-        [Pure]
-        [ContractAnnotation("value:null=>false")]
-        public static bool StartsWithAny([CanBeNull] this string value, [NotNull, ItemNotNull] IEnumerable<string> starts)
+        public static bool StartsWithAny([CanBeNull] this string value, string[] starts)
         {
             return value != null && starts.Any(s => value.StartsWith(s));
         }
 
-        [Pure]
-        [ContractAnnotation("value:null=>null")]
-        public static string RemoveLines([CanBeNull] this string value, [NotNull] Func<string, bool> shouldRemoveLine)
+        public static string RemoveLines(this string value, Func<string, bool> shouldRemoveLine)
         {
             if (value.IsNullOrEmpty())
             {
@@ -193,27 +179,64 @@ namespace System
             {
                 if (!shouldRemoveLine(line))
                 {
-                    sb.Append(line).Append('\n');
+                    sb.Append(line + '\n');
                 }
             }
 
             return sb.ToString();
         }
 
+        /// <summary>Split a string, removing empty entries, then trim whitespace.</summary>
+        public static IEnumerable<string> SplitThenTrim(this string value, params string[] separator)
+        {
+            return value
+                .Split(separator, StringSplitOptions.RemoveEmptyEntries)
+                .Select(s => s.Trim());
+        }
+
+        /// <summary>Split a string, removing empty entries, then trim whitespace.</summary>
+        public static IEnumerable<string> SplitThenTrim(this string value, params char[] separator)
+        {
+            return value
+                .Split(separator, StringSplitOptions.RemoveEmptyEntries)
+                .Select(s => s.Trim());
+        }
+
         /// <summary>Split a string, delimited by line-breaks, excluding empty entries.</summary>
-        [Pure]
-        [NotNull]
-        public static string[] SplitLines([NotNull] this string value)
+        public static string[] SplitLines(this string value)
         {
             return value.Split(NewLineSeparator, StringSplitOptions.RemoveEmptyEntries);
         }
 
+        /// <summary>Split a string, delimited by line-breaks, excluding empty entries; then trim whitespace.</summary>
+        public static IEnumerable<string> SplitLinesThenTrim(this string value)
+        {
+            return value.SplitThenTrim(NewLineSeparator);
+        }
+
+        /// <summary>Gets the text after the last separator.
+        /// If NO separator OR ends with separator, returns the original value.</summary>
+        public static string SubstringAfterLastSafe(this string value, string separator)
+        {// ex: "origin/master" -> "master"
+            if (value.EndsWith(separator) || !value.Contains(separator))
+            {// "origin/master/" OR "master" -> return original
+                return value;
+            }
+
+            return value.Substring(1 + value.LastIndexOf(separator, StringComparison.InvariantCultureIgnoreCase));
+        }
+
+        public static string SubstringAfterFirst(this string value, string separator)
+        {
+            return value.Substring(1 + value.IndexOf(separator, StringComparison.InvariantCultureIgnoreCase));
+        }
+
         /// <summary>
-        /// Shortens <paramref name="str"/> if necessary, so that the resulting string has fewer than <paramref name="maxLength"/> characters.
-        /// If shortened, ellipsis are appended to the truncated string.
+        /// Shortens this string, that it will be no longer than the specified <paramref name="maxLength"/>.
+        /// If this string is longer than the specified <paramref name="maxLength"/>, it'll be truncated to the length of <paramref name="maxLength"/>-3
+        /// and the "..." will be appended to the end of the resulting string.
         /// </summary>
-        [NotNull]
-        public static string ShortenTo([CanBeNull] this string str, int maxLength)
+        public static string ShortenTo(this string str, int maxLength)
         {
             if (str.IsNullOrEmpty())
             {
@@ -224,13 +247,10 @@ namespace System
             {
                 return str;
             }
-
-            if (maxLength < 3)
+            else
             {
-                return str.Substring(0, maxLength);
+                return str.Substring(0, maxLength - 3) + "...";
             }
-
-            return str.Substring(0, maxLength - 3) + "...";
         }
     }
 
@@ -239,7 +259,6 @@ namespace System
         /// <summary>
         /// Translates this bool value to the git command line force flag
         /// </summary>
-        [NotNull]
         public static string AsForce(this bool force)
         {
             return force ? " -f " : string.Empty;

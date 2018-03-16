@@ -110,8 +110,7 @@ namespace TeamCityIntegration
 
             _buildServerWatcher = buildServerWatcher;
 
-            ProjectNames = buildServerWatcher.ReplaceVariables(config.GetString("ProjectName", ""))
-                .Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+            ProjectNames = config.GetString("ProjectName", "").Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
 
             var buildIdFilerSetting = config.GetString("BuildIdFilter", "");
             if (!BuildServerSettingsHelper.IsRegexValid(buildIdFilerSetting))
@@ -570,7 +569,7 @@ namespace TeamCityIntegration
         public List<Build> GetProjectBuilds(string projectId)
         {
             var projectsRootElement = GetProjectFromNameXmlResponseAsync(projectId, CancellationToken.None).Result;
-            return projectsRootElement.Root.Element("buildTypes").Elements().Select(e => new Build
+            return projectsRootElement.Root.Element("buildTypes").Elements().Select(e => new Build()
             {
                 Id = (string)e.Attribute("id"),
                 Name = (string)e.Attribute("name"),

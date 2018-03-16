@@ -38,8 +38,8 @@ namespace GitUI.Editor
 
         public new Font Font
         {
-            get => TextEditor.Font;
-            set => TextEditor.Font = value;
+            get { return TextEditor.Font; }
+            set { TextEditor.Font = value; }
         }
 
         public new event MouseEventHandler MouseMove;
@@ -126,8 +126,8 @@ namespace GitUI.Editor
 
         public bool ShowLineNumbers
         {
-            get => TextEditor.ShowLineNumbers;
-            set => TextEditor.ShowLineNumbers = value;
+            get { return TextEditor.ShowLineNumbers; }
+            set { TextEditor.ShowLineNumbers = value; }
         }
 
         public void SetText(string text, bool isDiff = false)
@@ -242,32 +242,62 @@ namespace GitUI.Editor
 
         public bool ShowEOLMarkers
         {
-            get => TextEditor.ShowEOLMarkers;
-            set => TextEditor.ShowEOLMarkers = value;
+            get
+            {
+                return TextEditor.ShowEOLMarkers;
+            }
+            set
+            {
+                TextEditor.ShowEOLMarkers = value;
+            }
         }
 
         public bool ShowSpaces
         {
-            get => TextEditor.ShowSpaces;
-            set => TextEditor.ShowSpaces = value;
+            get
+            {
+                return TextEditor.ShowSpaces;
+            }
+            set
+            {
+                TextEditor.ShowSpaces = value;
+            }
         }
 
         public bool ShowTabs
         {
-            get => TextEditor.ShowTabs;
-            set => TextEditor.ShowTabs = value;
+            get
+            {
+                return TextEditor.ShowTabs;
+            }
+            set
+            {
+                TextEditor.ShowTabs = value;
+            }
         }
 
         public int VRulerPosition
         {
-            get => TextEditor.VRulerRow;
-            set => TextEditor.VRulerRow = value;
+            get
+            {
+                return TextEditor.VRulerRow;
+            }
+            set
+            {
+                TextEditor.VRulerRow = value;
+            }
         }
 
         public int FirstVisibleLine
         {
-            get => TextEditor.ActiveTextAreaControl.TextArea.TextView.FirstVisibleLine;
-            set => TextEditor.ActiveTextAreaControl.TextArea.TextView.FirstVisibleLine = value;
+            get
+            {
+                return TextEditor.ActiveTextAreaControl.TextArea.TextView.FirstVisibleLine;
+            }
+            set
+            {
+                TextEditor.ActiveTextAreaControl.TextArea.TextView.FirstVisibleLine = value;
+            }
         }
 
         public int GetLineFromVisualPosY(int visualPosY)
@@ -322,8 +352,14 @@ namespace GitUI.Editor
 
         public bool IsReadOnly
         {
-            get => TextEditor.IsReadOnly;
-            set => TextEditor.IsReadOnly = value;
+            get
+            {
+                return TextEditor.IsReadOnly;
+            }
+            set
+            {
+                TextEditor.IsReadOnly = value;
+            }
         }
 
         public void SetFileLoader(GetNextFileFnc fileLoader)

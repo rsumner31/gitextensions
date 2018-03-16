@@ -7,7 +7,7 @@ using GitUIPluginInterfaces.RepositoryHosts;
 
 namespace GitUI.CommandsDialogs.RepoHosting
 {
-    internal static class DiscussionHtmlCreator
+    internal class DiscussionHtmlCreator
     {
         public static string CreateFor(IPullRequestInformation currentPullRequestInfo, List<IDiscussionEntry> entries = null)
         {

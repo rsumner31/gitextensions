@@ -42,12 +42,21 @@ namespace ResourceManager.Xliff
 
         public static void AddTranslationItem(string category, object obj, string propName, ITranslation translation)
         {
-            var propertyInfo = obj?.GetType().GetProperty(
-                propName,
+            if (obj == null)
+            {
+                return;
+            }
+
+            var propertyInfo = obj.GetType().GetProperty(propName,
                 BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static |
                 BindingFlags.NonPublic | BindingFlags.SetProperty);
+            if (propertyInfo == null)
+            {
+                return;
+            }
 
-            if (propertyInfo?.GetValue(obj, null) is string value && AllowTranslateProperty(value))
+            var value = propertyInfo.GetValue(obj, null) as string;
+            if (value != null && AllowTranslateProperty(value))
             {
                 translation.AddTranslationItem(category, propName, "Text", value);
             }
@@ -118,7 +127,8 @@ namespace ResourceManager.Xliff
                         continue;
                     }
 
-                    if (value is string valueStr)
+                    var valueStr = value as string;
+                    if (valueStr != null)
                     {
                         if (AllowTranslateProperty(valueStr))
                         {
@@ -128,12 +138,12 @@ namespace ResourceManager.Xliff
                         continue;
                     }
 
-                    if (value is IList listItems)
+                    var listItems = value as IList;
+                    if (listItems != null)
                     {
                         for (int index = 0; index < listItems.Count; index++)
                         {
                             var listItem = listItems[index] as string;
-
                             if (AllowTranslateProperty(listItem))
                             {
                                 translation.AddTranslationItem(category, itemName, "Item" + index, listItem);
@@ -161,8 +171,8 @@ namespace ResourceManager.Xliff
                         for (int index = 0; index < list.Count; index++)
                         {
                             propertyName = "Item" + index;
-
-                            if (list[index] is string listValue)
+                            var listValue = list[index] as string;
+                            if (listValue != null)
                             {
                                 string ProvideDefaultValue() => listValue;
                                 string value = translation.TranslateItem(category, itemName, propertyName,
@@ -254,7 +264,8 @@ namespace ResourceManager.Xliff
 
             if (propertyInfo.Name.Equals("Items", StringComparison.CurrentCulture))
             {
-                if (propertyInfo.GetValue(itemObj, null) is IList items && items.Count != 0)
+                var items = propertyInfo.GetValue(itemObj, null) as IList;
+                if (items != null && items.Count != 0)
                 {
                     return true;
                 }

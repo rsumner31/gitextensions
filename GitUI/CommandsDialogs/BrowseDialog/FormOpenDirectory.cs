@@ -41,7 +41,7 @@ namespace GitUI.CommandsDialogs.BrowseDialog
                 directories.Add(PathUtil.EnsureTrailingPathSeparator(AppSettings.DefaultCloneDestinationPath));
             }
 
-            if (!string.IsNullOrWhiteSpace(currentModule?.WorkingDir))
+            if (currentModule != null && !string.IsNullOrWhiteSpace(currentModule.WorkingDir))
             {
                 DirectoryInfo di = new DirectoryInfo(currentModule.WorkingDir);
                 if (di.Parent != null)

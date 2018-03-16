@@ -20,42 +20,38 @@ namespace GitUI.CommandsDialogs.AboutBoxDialog
 
         private static TextBox GetNewTextBox()
         {
-            return new TextBox
-            {
-                BackColor = Color.White,
-                Dock = DockStyle.Fill,
-                Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0),
-                Margin = new Padding(0),
-                Multiline = true,
-                ReadOnly = true,
-                ScrollBars = ScrollBars.Vertical,
-                TabStop = false
-            };
+            TextBox tb = new TextBox();
+            tb.BackColor = Color.White;
+            tb.Dock = DockStyle.Fill;
+            tb.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            tb.Margin = new Padding(0);
+            tb.Multiline = true;
+            tb.ReadOnly = true;
+            tb.ScrollBars = ScrollBars.Vertical;
+            tb.TabStop = false;
+            return tb;
         }
 
         private static TabPage GetNewTabPage(TextBox tb, string caption)
         {
-            var tp = new TabPage
-            {
-                Margin = new Padding(0),
-                Text = caption
-            };
+            TabPage tp = new TabPage();
+            tp.Margin = new Padding(0);
+            tp.Text = caption;
             tp.Controls.Add(tb);
             return tp;
         }
 
         private static TabControl GetNewTabControl()
         {
-            return new TabControl
-            {
-                Dock = DockStyle.Fill,
-                Font = new Font("Segoe UI", 10F, FontStyle.Bold, GraphicsUnit.Point, 0),
-                ItemSize = new Size(150, 26),
-                Margin = new Padding(0),
-                Padding = new Point(0, 0),
-                SelectedIndex = 0,
-                SizeMode = TabSizeMode.Fixed
-            };
+            TabControl tc = new TabControl();
+            tc.Dock = DockStyle.Fill;
+            tc.Font = new Font("Segoe UI", 10F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            tc.ItemSize = new Size(150, 26);
+            tc.Margin = new Padding(0);
+            tc.Padding = new Point(0, 0);
+            tc.SelectedIndex = 0;
+            tc.SizeMode = TabSizeMode.Fixed;
+            return tc;
         }
 
         private void SetupForm()

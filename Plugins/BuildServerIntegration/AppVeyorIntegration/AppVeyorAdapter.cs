@@ -71,7 +71,6 @@ namespace AppVeyorIntegration
                 throw new InvalidOperationException("Already initialized");
             }
 
-            _buildServerWatcher = buildServerWatcher;
             _isCommitInRevisionGrid = isCommitInRevisionGrid;
             var accountName = config.GetString("AppVeyorAccountName", null);
             _accountToken = config.GetString("AppVeyorAccountToken", null);
@@ -87,6 +86,7 @@ namespace AppVeyorIntegration
                     && !string.IsNullOrWhiteSpace(_gitHubToken);
 
             _fetchBuilds = new HashSet<string>();
+            _buildServerWatcher = buildServerWatcher;
 
             _httpClientAppVeyor = GetHttpClient(WebSiteUrl, _accountToken);
 
@@ -97,8 +97,7 @@ namespace AppVeyorIntegration
             string[] projectNames = null;
             if (!useAllProjets)
             {
-                projectNames = _buildServerWatcher.ReplaceVariables(projectNamesSetting)
-                    .Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+                projectNames = projectNamesSetting.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
             }
 
             if (Projects.Count == 0 ||

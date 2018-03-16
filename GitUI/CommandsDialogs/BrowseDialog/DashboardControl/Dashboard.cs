@@ -138,7 +138,9 @@ namespace GitUI.CommandsDialogs.BrowseDialog.DashboardControl
         {
             foreach (Control control in controls)
             {
-                if (control is T result && predicate(result))
+                var result = control as T;
+
+                if (result != null && predicate(result))
                 {
                     return result;
                 }
@@ -223,10 +225,8 @@ namespace GitUI.CommandsDialogs.BrowseDialog.DashboardControl
 
             RecentRepositories.Clear();
 
-            var filteredRecentRepositoryHistory = new RepositoryCategory
-            {
-                Description = Repositories.RepositoryHistory.Description
-            };
+            RepositoryCategory filteredRecentRepositoryHistory = new RepositoryCategory();
+            filteredRecentRepositoryHistory.Description = Repositories.RepositoryHistory.Description;
 
             foreach (Repository repository in Repositories.RepositoryHistory.Repositories)
             {
@@ -275,7 +275,8 @@ namespace GitUI.CommandsDialogs.BrowseDialog.DashboardControl
 
         private void dashboardItem_Click(object sender, EventArgs e)
         {
-            if (!(sender is DashboardItem label) || string.IsNullOrEmpty(label.Path))
+            var label = sender as DashboardItem;
+            if (label == null || string.IsNullOrEmpty(label.Path))
             {
                 return;
             }
@@ -359,7 +360,8 @@ namespace GitUI.CommandsDialogs.BrowseDialog.DashboardControl
 
         private void groupLayoutPanel_DragDrop(object sender, DragEventArgs e)
         {
-            if (e.Data.GetData(DataFormats.FileDrop) is string[] fileNameArray)
+            var fileNameArray = e.Data.GetData(DataFormats.FileDrop) as string[];
+            if (fileNameArray != null)
             {
                 if (fileNameArray.Length != 1)
                 {
@@ -408,7 +410,8 @@ namespace GitUI.CommandsDialogs.BrowseDialog.DashboardControl
 
         private void groupLayoutPanel_DragEnter(object sender, DragEventArgs e)
         {
-            if (e.Data.GetData(DataFormats.FileDrop) is string[] fileNameArray)
+            var fileNameArray = e.Data.GetData(DataFormats.FileDrop) as string[];
+            if (fileNameArray != null)
             {
                 if (fileNameArray.Length != 1)
                 {

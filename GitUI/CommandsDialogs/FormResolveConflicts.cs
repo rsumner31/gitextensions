@@ -238,8 +238,8 @@ namespace GitUI.CommandsDialogs
             return (path ?? "").ToNativePath();
         }
 
-        private readonly Dictionary<string, string> _mergeScripts = new Dictionary<string, string>
-        {
+        private readonly Dictionary<string, string> _mergeScripts = new Dictionary<string, string>()
+            {
                 { ".doc",  "merge-doc.js" },
                 { ".docx", "merge-doc.js" },
                 { ".docm", "merge-doc.js" },
@@ -1204,11 +1204,11 @@ namespace GitUI.CommandsDialogs
 
         internal enum Commands
         {
-            Merge = 0,
-            Rescan = 1,
-            ChooseRemote = 2,
-            ChooseLocal = 3,
-            ChooseBase = 4
+            Merge,
+            Rescan,
+            ChooseRemote,
+            ChooseLocal,
+            ChooseBase
         }
 
         protected override bool ExecuteCommand(int cmd)

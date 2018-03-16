@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace GitUIPluginInterfaces
 {
-    public static class ManagedExtensibility
+    public class ManagedExtensibility
     {
         private static List<CompositionContainer> _compositionContainers;
 

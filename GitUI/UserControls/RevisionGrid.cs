@@ -206,8 +206,8 @@ namespace GitUI
             foreach (var menuCommand in menuCommands)
             {
                 var toolStripItem = MenuCommand.CreateToolStripItem(menuCommand);
-
-                if (toolStripItem is ToolStripMenuItem toolStripMenuItem)
+                var toolStripMenuItem = toolStripItem as ToolStripMenuItem;
+                if (toolStripMenuItem != null)
                 {
                     menuCommand.RegisterMenuItem(toolStripMenuItem);
                 }
@@ -315,8 +315,8 @@ namespace GitUI
         [DefaultValue(true)]
         public bool MultiSelect
         {
-            get => Revisions.MultiSelect;
-            set => Revisions.MultiSelect = value;
+            get { return Revisions.MultiSelect; }
+            set { Revisions.MultiSelect = value; }
         }
 
         [Description("Show uncommited changes in revision grid if enabled in settings.")]
@@ -925,8 +925,14 @@ namespace GitUI
 
         public RevisionGraphDrawStyleEnum RevisionGraphDrawStyle
         {
-            get => Revisions.RevisionGraphDrawStyle;
-            set => Revisions.RevisionGraphDrawStyle = value;
+            get
+            {
+                return Revisions.RevisionGraphDrawStyle;
+            }
+            set
+            {
+                Revisions.RevisionGraphDrawStyle = value;
+            }
         }
 
         public string DescribeRevision(GitRevision revision, int maxLength = 0)
@@ -1601,19 +1607,19 @@ namespace GitUI
 
             var spi = SuperprojectCurrentCheckout.IsCompleted ? SuperprojectCurrentCheckout.Result : null;
             var superprojectRefs = new List<IGitRef>();
-            if (spi?.Refs != null && spi.Refs.ContainsKey(revision.Guid))
+            if (spi != null && spi.Refs != null && spi.Refs.ContainsKey(revision.Guid))
             {
                 superprojectRefs.AddRange(spi.Refs[revision.Guid].Where(ShowRemoteRef));
             }
 
             e.Handled = true;
 
-            var drawRefArgs = new DrawRefArgs
-            {
-                Graphics = e.Graphics,
-                CellBounds = e.CellBounds,
-                IsRowSelected = (e.State & DataGridViewElementStates.Selected) == DataGridViewElementStates.Selected
-            };
+            var drawRefArgs = new DrawRefArgs();
+
+            drawRefArgs.Graphics = e.Graphics;
+            drawRefArgs.CellBounds = e.CellBounds;
+
+            drawRefArgs.IsRowSelected = (e.State & DataGridViewElementStates.Selected) == DataGridViewElementStates.Selected;
 
             // Determine background colour for cell
             Brush cellBackgroundBrush;
@@ -2294,12 +2300,12 @@ namespace GitUI
             var selectedRevisions = GetSelectedRevisions();
             if (selectedRevisions.Any(rev => !rev.IsArtificial))
             {
-                Form ProvideForm()
+                Func<Form> provideForm = () =>
                 {
                     return new FormCommitDiff(UICommands, selectedRevisions[0].Guid);
-                }
+                };
 
-                UICommands.ShowModelessForm(this, false, null, null, ProvideForm);
+                UICommands.ShowModelessForm(this, false, null, null, provideForm);
             }
             else if (!selectedRevisions.Any())
             {
@@ -2528,13 +2534,15 @@ namespace GitUI
             _rebaseOnTopOf = null;
             foreach (var head in gitRefListsForRevision.AllTags)
             {
-                var deleteItem = new ToolStripMenuItem(head.Name) { Tag = head.Name };
-                deleteItem.Click += ToolStripItemClickDeleteTag;
-                deleteTagDropDown.Items.Add(deleteItem);
+                ToolStripItem toolStripItem = new ToolStripMenuItem(head.Name);
+                toolStripItem.Tag = head.Name;
+                toolStripItem.Click += ToolStripItemClickDeleteTag;
+                deleteTagDropDown.Items.Add(toolStripItem);
 
-                var mergeItem = new ToolStripMenuItem(head.Name) { Tag = GetRefUnambiguousName(head) };
-                mergeItem.Click += ToolStripItemClickMergeBranch;
-                mergeBranchDropDown.Items.Add(mergeItem);
+                toolStripItem = new ToolStripMenuItem(head.Name);
+                toolStripItem.Tag = GetRefUnambiguousName(head);
+                toolStripItem.Click += ToolStripItemClickMergeBranch;
+                mergeBranchDropDown.Items.Add(toolStripItem);
             }
 
             // For now there is no action that could be done on currentBranch
@@ -2685,7 +2693,7 @@ namespace GitUI
 
             toolStripSeparator6.Enabled = branchNameCopyToolStripMenuItem.Enabled || tagNameCopyToolStripMenuItem.Enabled;
 
-            openBuildReportToolStripMenuItem.Visible = !string.IsNullOrWhiteSpace(revision.BuildStatus?.Url);
+            openBuildReportToolStripMenuItem.Visible = revision.BuildStatus != null && !string.IsNullOrWhiteSpace(revision.BuildStatus.Url);
 
             RefreshOwnScripts();
         }
@@ -2721,92 +2729,128 @@ namespace GitUI
 
         private void ToolStripItemClickDeleteTag(object sender, EventArgs e)
         {
-            if (sender is ToolStripItem toolStripItem)
+            var toolStripItem = sender as ToolStripItem;
+
+            if (toolStripItem == null)
             {
-                UICommands.StartDeleteTagDialog(this, toolStripItem.Tag as string);
+                return;
             }
+
+            UICommands.StartDeleteTagDialog(this, toolStripItem.Tag as string);
         }
 
         private void ToolStripItemClickDeleteBranch(object sender, EventArgs e)
         {
-            if (sender is ToolStripItem toolStripItem)
+            var toolStripItem = sender as ToolStripItem;
+
+            if (toolStripItem == null)
             {
-                UICommands.StartDeleteBranchDialog(this, toolStripItem.Tag as string);
+                return;
             }
+
+            UICommands.StartDeleteBranchDialog(this, toolStripItem.Tag as string);
         }
 
         private void ToolStripItemClickDeleteRemoteBranch(object sender, EventArgs e)
         {
-            if (sender is ToolStripItem toolStripItem)
+            var toolStripItem = sender as ToolStripItem;
+
+            if (toolStripItem == null)
             {
-                UICommands.StartDeleteRemoteBranchDialog(this, toolStripItem.Text);
+                return;
             }
+
+            UICommands.StartDeleteRemoteBranchDialog(this, toolStripItem.Text);
         }
 
         private void ToolStripItemClickCheckoutBranch(object sender, EventArgs e)
         {
-            if (sender is ToolStripItem toolStripItem)
+            var toolStripItem = sender as ToolStripItem;
+
+            if (toolStripItem == null)
             {
-                string branch = toolStripItem.Text;
-                UICommands.StartCheckoutBranch(this, branch, false);
+                return;
             }
+
+            string branch = toolStripItem.Text;
+            UICommands.StartCheckoutBranch(this, branch, false);
         }
 
         private void ToolStripItemClickCheckoutRemoteBranch(object sender, EventArgs e)
         {
-            if (sender is ToolStripItem toolStripItem)
+            var toolStripItem = sender as ToolStripItem;
+
+            if (toolStripItem == null)
             {
-                UICommands.StartCheckoutRemoteBranch(this, toolStripItem.Text);
+                return;
             }
+
+            UICommands.StartCheckoutRemoteBranch(this, toolStripItem.Text);
         }
 
         private void ToolStripItemClickMergeBranch(object sender, EventArgs e)
         {
-            if (sender is ToolStripItem toolStripItem)
+            var toolStripItem = sender as ToolStripItem;
+
+            if (toolStripItem == null)
             {
-                UICommands.StartMergeBranchDialog(this, toolStripItem.Tag as string);
+                return;
             }
+
+            UICommands.StartMergeBranchDialog(this, toolStripItem.Tag as string);
         }
 
         private void ToolStripItemClickRebaseBranch(object sender, EventArgs e)
         {
-            if (_rebaseOnTopOf != null)
+            if (_rebaseOnTopOf == null)
             {
-                UICommands.StartRebase(this, _rebaseOnTopOf);
+                return;
             }
+
+            UICommands.StartRebase(this, _rebaseOnTopOf);
         }
 
         private void OnRebaseInteractivelyClicked(object sender, EventArgs e)
         {
-            if (_rebaseOnTopOf != null)
+            if (_rebaseOnTopOf == null)
             {
-                UICommands.StartInteractiveRebase(this, _rebaseOnTopOf);
+                return;
             }
+
+            UICommands.StartInteractiveRebase(this, _rebaseOnTopOf);
         }
 
         private void OnRebaseWithAdvOptionsClicked(object sender, EventArgs e)
         {
-            if (_rebaseOnTopOf != null)
+            if (_rebaseOnTopOf == null)
             {
-                UICommands.StartRebaseDialogWithAdvOptions(this, _rebaseOnTopOf);
+                return;
             }
+
+            UICommands.StartRebaseDialogWithAdvOptions(this, _rebaseOnTopOf);
         }
 
         private void ToolStripItemClickRenameBranch(object sender, EventArgs e)
         {
-            if (sender is ToolStripItem toolStripItem)
+            var toolStripItem = sender as ToolStripItem;
+
+            if (toolStripItem == null)
             {
-                UICommands.StartRenameDialog(this, toolStripItem.Tag as string);
+                return;
             }
+
+            UICommands.StartRenameDialog(this, toolStripItem.Tag as string);
         }
 
         private void CheckoutRevisionToolStripMenuItemClick(object sender, EventArgs e)
         {
-            if (LatestSelectedRevision != null)
+            if (LatestSelectedRevision == null)
             {
-                string revision = LatestSelectedRevision.Guid;
-                UICommands.StartCheckoutRevisionDialog(this, revision);
+                return;
             }
+
+            string revision = LatestSelectedRevision.Guid;
+            UICommands.StartCheckoutRevisionDialog(this, revision);
         }
 
         private void ArchiveRevisionToolStripMenuItemClick(object sender, EventArgs e)
@@ -3189,7 +3233,8 @@ namespace GitUI
 
         private void Revisions_DragDrop(object sender, DragEventArgs e)
         {
-            if (e.Data.GetData(DataFormats.FileDrop) is Array fileNameArray)
+            var fileNameArray = e.Data.GetData(DataFormats.FileDrop) as Array;
+            if (fileNameArray != null)
             {
                 if (fileNameArray.Length > 10)
                 {
@@ -3213,7 +3258,8 @@ namespace GitUI
 
         private static void Revisions_DragEnter(object sender, DragEventArgs e)
         {
-            if (e.Data.GetData(DataFormats.FileDrop) is Array fileNameArray)
+            var fileNameArray = e.Data.GetData(DataFormats.FileDrop) as Array;
+            if (fileNameArray != null)
             {
                 foreach (object fileNameObject in fileNameArray)
                 {
@@ -3495,33 +3541,33 @@ namespace GitUI
 
         internal enum Commands
         {
-            ToggleRevisionGraph = 0,
-            RevisionFilter = 1,
-            ToggleAuthorDateCommitDate = 2,
-            ToggleOrderRevisionsByDate = 3,
-            ToggleShowRelativeDate = 4,
-            ToggleDrawNonRelativesGray = 5,
-            ToggleShowGitNotes = 6,
-            ToggleRevisionCardLayout = 7,
-            ToggleShowMergeCommits = 8,
-            ShowAllBranches = 9,
-            ShowCurrentBranchOnly = 10,
-            ShowFilteredBranches = 11,
-            ShowRemoteBranches = 12,
-            ShowFirstParent = 13,
-            GoToParent = 14,
-            GoToChild = 15,
-            ToggleHighlightSelectedBranch = 16,
-            NextQuickSearch = 17,
-            PrevQuickSearch = 18,
-            SelectCurrentRevision = 19,
-            GoToCommit = 20,
-            NavigateBackward = 21,
-            NavigateForward = 22,
-            SelectAsBaseToCompare = 23,
-            CompareToBase = 24,
-            CreateFixupCommit = 25,
-            ToggleShowTags = 26
+            ToggleRevisionGraph,
+            RevisionFilter,
+            ToggleAuthorDateCommitDate,
+            ToggleOrderRevisionsByDate,
+            ToggleShowRelativeDate,
+            ToggleDrawNonRelativesGray,
+            ToggleShowGitNotes,
+            ToggleRevisionCardLayout,
+            ToggleShowMergeCommits,
+            ShowAllBranches,
+            ShowCurrentBranchOnly,
+            ShowFilteredBranches,
+            ShowRemoteBranches,
+            ShowFirstParent,
+            GoToParent,
+            GoToChild,
+            ToggleHighlightSelectedBranch,
+            NextQuickSearch,
+            PrevQuickSearch,
+            SelectCurrentRevision,
+            GoToCommit,
+            NavigateBackward,
+            NavigateForward,
+            SelectAsBaseToCompare,
+            CompareToBase,
+            CreateFixupCommit,
+            ToggleShowTags,
         }
 
         protected override bool ExecuteCommand(int cmd)
@@ -3666,8 +3712,8 @@ namespace GitUI
             var r = LatestSelectedRevision;
             if (r != null)
             {
-                CopyToClipboardMenuHelper.AddOrUpdateTextPostfix(hashCopyToolStripMenuItem, r.Guid.ShortenTo(15));
-                CopyToClipboardMenuHelper.AddOrUpdateTextPostfix(messageCopyToolStripMenuItem, r.Subject.ShortenTo(30));
+                CopyToClipboardMenuHelper.AddOrUpdateTextPostfix(hashCopyToolStripMenuItem, CopyToClipboardMenuHelper.StrLimitWithElipses(r.Guid, 15));
+                CopyToClipboardMenuHelper.AddOrUpdateTextPostfix(messageCopyToolStripMenuItem, CopyToClipboardMenuHelper.StrLimitWithElipses(r.Subject, 30));
                 CopyToClipboardMenuHelper.AddOrUpdateTextPostfix(authorCopyToolStripMenuItem, r.Author);
                 CopyToClipboardMenuHelper.AddOrUpdateTextPostfix(dateCopyToolStripMenuItem, r.CommitDate.ToString());
             }
@@ -3758,8 +3804,7 @@ namespace GitUI
         private void openBuildReportToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var revision = GetSelectedRevisions().First();
-
-            if (!string.IsNullOrWhiteSpace(revision.BuildStatus?.Url))
+            if (revision.BuildStatus != null && !string.IsNullOrWhiteSpace(revision.BuildStatus.Url))
             {
                 Process.Start(revision.BuildStatus.Url);
             }

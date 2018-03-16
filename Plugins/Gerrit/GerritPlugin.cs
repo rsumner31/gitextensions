@@ -402,7 +402,9 @@ namespace Gerrit
         {
             foreach (Control control in controls)
             {
-                if (control is T result && predicate(result))
+                var result = control as T;
+
+                if (result != null && predicate(result))
                 {
                     return result;
                 }

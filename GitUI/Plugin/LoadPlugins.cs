@@ -42,7 +42,8 @@ namespace GitUI
                     {
                         string exceptionInfo = "Exception info:\r\n";
 
-                        if (ex is ReflectionTypeLoadException rtle)
+                        var rtle = ex as ReflectionTypeLoadException;
+                        if (rtle != null)
                         {
                             foreach (var el in rtle.LoaderExceptions)
                             {
@@ -51,16 +52,16 @@ namespace GitUI
                         }
                         else
                         {
-                            void GetEx(Exception arg)
+                            Action<Exception> getEx = null;
+                            getEx = arg =>
                             {
                                 exceptionInfo += arg.Message + "\r\n";
                                 if (arg.InnerException != null)
                                 {
-                                    GetEx(arg.InnerException);
+                                    getEx(arg.InnerException);
                                 }
-                            }
-
-                            GetEx(ex);
+                            };
+                            getEx(ex);
                         }
 
                         MessageBox.Show(string.Format("Failed to load plugin {0} : \r\n{1}", pluginFile, exceptionInfo));

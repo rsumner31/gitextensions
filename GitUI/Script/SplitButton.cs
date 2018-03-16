@@ -59,8 +59,14 @@ namespace GitUI.Script
         [Browsable(false)]
         public override ContextMenuStrip ContextMenuStrip
         {
-            get => SplitMenuStrip;
-            set => SplitMenuStrip = value;
+            get
+            {
+                return SplitMenuStrip;
+            }
+            set
+            {
+                SplitMenuStrip = value;
+            }
         }
 
         [DefaultValue(null)]

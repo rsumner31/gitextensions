@@ -211,17 +211,17 @@ namespace GitUI
 
         public static void InvokeAsync(this Control control, SendOrPostCallback action, object state)
         {
-            void CheckDisposedAndInvoke(object s)
+            SendOrPostCallback checkDisposedAndInvoke = (s) =>
             {
                 if (!control.IsDisposed)
                 {
                     action(s);
                 }
-            }
+            };
 
             if (!control.IsDisposed)
             {
-                UISynchronizationContext.Post(CheckDisposedAndInvoke, state);
+                UISynchronizationContext.Post(checkDisposedAndInvoke, state);
             }
         }
 
@@ -232,7 +232,7 @@ namespace GitUI
 
         public static void InvokeSync(this Control control, SendOrPostCallback action, object state)
         {
-            void CheckDisposedAndInvoke(object s)
+            SendOrPostCallback checkDisposedAndInvoke = (s) =>
             {
                 if (!control.IsDisposed)
                 {
@@ -246,11 +246,11 @@ namespace GitUI
                         throw;
                     }
                 }
-            }
+            };
 
             if (!control.IsDisposed)
             {
-                UISynchronizationContext.Send(CheckDisposedAndInvoke, state);
+                UISynchronizationContext.Send(checkDisposedAndInvoke, state);
             }
         }
 

@@ -13,8 +13,7 @@ namespace GitPluginShared.Commands
                         o =>
                         {
                             string file = GitCommands.RunGitExWait("searchfile", application.Solution.FullName);
-
-                            if (string.IsNullOrEmpty(file?.Trim()))
+                            if (file == null || string.IsNullOrEmpty(file.Trim()))
                             {
                                 return;
                             }

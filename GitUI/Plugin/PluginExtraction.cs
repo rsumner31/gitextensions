@@ -17,17 +17,21 @@ namespace GitUI
                     continue;
                 }
 
-                if (Activator.CreateInstance(type) is IGitPlugin gitPlugin)
+                var gitPlugin = Activator.CreateInstance(type) as IGitPlugin;
+                if (gitPlugin == null)
                 {
-                    gitPlugin.SettingsContainer = new GitPluginSettingsContainer(gitPlugin.Name);
-
-                    if (gitPlugin is IRepositoryHostPlugin gitRepositoryHostPlugin)
-                    {
-                        RepoHosts.GitHosters.Add(gitRepositoryHostPlugin);
-                    }
-
-                    LoadedPlugins.Plugins.Add(gitPlugin);
+                    continue;
                 }
+
+                gitPlugin.SettingsContainer = new GitPluginSettingsContainer(gitPlugin.Name);
+
+                var gitRepositoryHostPlugin = gitPlugin as IRepositoryHostPlugin;
+                if (gitRepositoryHostPlugin != null)
+                {
+                    RepoHosts.GitHosters.Add(gitRepositoryHostPlugin);
+                }
+
+                LoadedPlugins.Plugins.Add(gitPlugin);
             }
         }
     }

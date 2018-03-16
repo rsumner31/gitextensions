@@ -64,7 +64,8 @@ namespace GitCommands.Git
                 return true;
             }
 
-            return obj is GitStash other && Equals(other);
+            GitStash other = obj as GitStash;
+            return other != null && Equals(other);
         }
 
         protected bool Equals(GitStash other)

@@ -183,7 +183,8 @@ namespace Bitbucket
 
         private void ReviewersDataGridEditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
-            if (e.Control is DataGridViewTextBoxEditingControl cellEdit)
+            var cellEdit = e.Control as DataGridViewTextBoxEditingControl;
+            if (cellEdit != null)
             {
                 cellEdit.AutoCompleteCustomSource = new AutoCompleteStringCollection();
                 cellEdit.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
@@ -324,59 +325,63 @@ namespace Bitbucket
 
         private void BtnMergeClick(object sender, EventArgs e)
         {
-            if (lbxPullRequests.SelectedItem is PullRequest curItem)
+            var curItem = lbxPullRequests.SelectedItem as PullRequest;
+            if (curItem == null)
             {
-                var mergeInfo = new MergeRequestInfo
-                {
-                    Id = curItem.Id,
-                    Version = curItem.Version,
-                    ProjectKey = curItem.DestProjectKey,
-                    TargetRepo = curItem.DestRepo,
-                };
+                return;
+            }
 
-                // Merge
-                var mergeRequest = new MergePullRequest(_settings, mergeInfo);
-                var response = mergeRequest.Send();
-                if (response.Success)
-                {
-                    MessageBox.Show(_success.Text);
-                    BitbucketViewPullRequestFormLoad(null, null);
-                }
-                else
-                {
-                    MessageBox.Show(
-                        string.Join(Environment.NewLine, response.Messages),
-                        _error.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+            var mergeInfo = new MergeRequestInfo
+            {
+                Id = curItem.Id,
+                Version = curItem.Version,
+                ProjectKey = curItem.DestProjectKey,
+                TargetRepo = curItem.DestRepo,
+            };
+
+            // Merge
+            var mergeRequest = new MergePullRequest(_settings, mergeInfo);
+            var response = mergeRequest.Send();
+            if (response.Success)
+            {
+                MessageBox.Show(_success.Text);
+                BitbucketViewPullRequestFormLoad(null, null);
+            }
+            else
+            {
+                MessageBox.Show(string.Join(Environment.NewLine, response.Messages),
+                    _error.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private void BtnApproveClick(object sender, EventArgs e)
         {
-            if (lbxPullRequests.SelectedItem is PullRequest curItem)
+            var curItem = lbxPullRequests.SelectedItem as PullRequest;
+            if (curItem == null)
             {
-                var mergeInfo = new MergeRequestInfo
-                {
-                    Id = curItem.Id,
-                    Version = curItem.Version,
-                    ProjectKey = curItem.DestProjectKey,
-                    TargetRepo = curItem.DestRepo,
-                };
+                return;
+            }
 
-                // Approve
-                var approveRequest = new ApprovePullRequest(_settings, mergeInfo);
-                var response = approveRequest.Send();
-                if (response.Success)
-                {
-                    MessageBox.Show(_success.Text);
-                    BitbucketViewPullRequestFormLoad(null, null);
-                }
-                else
-                {
-                    MessageBox.Show(
-                        string.Join(Environment.NewLine, response.Messages),
-                        _error.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+            var mergeInfo = new MergeRequestInfo
+            {
+                Id = curItem.Id,
+                Version = curItem.Version,
+                ProjectKey = curItem.DestProjectKey,
+                TargetRepo = curItem.DestRepo,
+            };
+
+            // Approve
+            var approveRequest = new ApprovePullRequest(_settings, mergeInfo);
+            var response = approveRequest.Send();
+            if (response.Success)
+            {
+                MessageBox.Show(_success.Text);
+                BitbucketViewPullRequestFormLoad(null, null);
+            }
+            else
+            {
+                MessageBox.Show(string.Join(Environment.NewLine, response.Messages),
+                    _error.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

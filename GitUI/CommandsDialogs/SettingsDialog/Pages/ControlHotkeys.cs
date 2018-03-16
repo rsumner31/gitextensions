@@ -100,11 +100,9 @@ namespace GitUI.CommandsDialogs.SettingsDialog.Pages
                 {
                     if (cmd != null)
                     {
-                        listMappings.Items.Add(
-                            new ListViewItem(new[] { cmd.Name, cmd.KeyData.ToText() ?? _hotkeyNotSet.Text })
-                            {
-                                Tag = cmd
-                            });
+                        var item = new ListViewItem(new[] { cmd.Name, cmd.KeyData.ToText() ?? _hotkeyNotSet.Text });
+                        item.Tag = cmd;
+                        listMappings.Items.Add(item);
                     }
                 }
             }

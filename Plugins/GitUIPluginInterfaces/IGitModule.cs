@@ -122,9 +122,6 @@ namespace GitUIPluginInterfaces
         /// <returns>Registered remotes.</returns>
         string[] GetRemotes(bool allowEmpty);
 
-        /// <summary>Gets the remote of the current branch; or "" if no remote is configured.</summary>
-        string GetCurrentRemote();
-
         string GetSetting(string setting);
         string GetEffectiveSetting(string setting);
 

@@ -5,10 +5,9 @@ using GitUIPluginInterfaces.RepositoryHosts;
 
 namespace GitUI
 {
-    public static class RepoHosts
+    public class RepoHosts
     {
         public static List<IRepositoryHostPlugin> GitHosters { get; }
-
         static RepoHosts()
         {
             GitHosters = new List<IRepositoryHostPlugin>();

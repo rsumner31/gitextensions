@@ -2,7 +2,7 @@
 
 namespace GitUI.CommandsDialogs.BrowseDialog
 {
-    internal static class FormBrowseUtil
+    internal class FormBrowseUtil
     {
         public static bool FileOrParentDirectoryExists(string path)
         {

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace GitUI
 {
-    internal static class NativeMethods
+    internal class NativeMethods
     {
         #region Unmanaged Code
 
@@ -66,10 +66,18 @@ namespace GitUI
         [DllImport("uxtheme.dll", CharSet = CharSet.Unicode)]
         internal static extern int SetWindowTheme(IntPtr hWnd, string pszSubAppName, string pszSubIdList);
         #endregion
+
+        private NativeMethods()
+        {
+        }
     }
 
-    internal static class NativeConstants
+    internal sealed class NativeConstants
     {
+        private NativeConstants()
+        {
+        }
+
         internal const uint WM_MOUSEACTIVATE = 0x21;
         internal const uint MA_ACTIVATE = 1;
         internal const uint MA_ACTIVATEANDEAT = 2;

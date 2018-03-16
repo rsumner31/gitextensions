@@ -131,8 +131,8 @@ namespace GitUI.Editor
         [Browsable(false)]
         public new Font Font
         {
-            get => _internalFileViewer.Font;
-            set => _internalFileViewer.Font = value;
+            get { return _internalFileViewer.Font; }
+            set { _internalFileViewer.Font = value; }
         }
 
         [Description("Ignore changes in amount of whitespace. This ignores whitespace at line end, and considers all other sequences of one or more whitespace characters to be equivalent.")]
@@ -151,8 +151,8 @@ namespace GitUI.Editor
         [Category("Behavior")]
         public bool IsReadOnly
         {
-            get => _internalFileViewer.IsReadOnly;
-            set => _internalFileViewer.IsReadOnly = value;
+            get { return _internalFileViewer.IsReadOnly; }
+            set { _internalFileViewer.IsReadOnly = value; }
         }
 
         [DefaultValue(true)]
@@ -160,8 +160,8 @@ namespace GitUI.Editor
         [Category("Appearance")]
         public bool ShowLineNumbers
         {
-            get => _internalFileViewer.ShowLineNumbers;
-            set => _internalFileViewer.ShowLineNumbers = value;
+            get { return _internalFileViewer.ShowLineNumbers; }
+            set { _internalFileViewer.ShowLineNumbers = value; }
         }
 
         private Encoding _encoding;
@@ -189,8 +189,8 @@ namespace GitUI.Editor
         [Browsable(false)]
         public int ScrollPos
         {
-            get => _internalFileViewer.ScrollPos;
-            set => _internalFileViewer.ScrollPos = value;
+            get { return _internalFileViewer.ScrollPos; }
+            set { _internalFileViewer.ScrollPos = value; }
         }
 
         [Browsable(false)]
@@ -1026,14 +1026,14 @@ namespace GitUI.Editor
 
         internal enum Commands
         {
-            Find = 0,
-            GoToLine = 1,
-            IncreaseNumberOfVisibleLines = 2,
-            DecreaseNumberOfVisibleLines = 3,
-            ShowEntireFile = 4,
-            TreatFileAsText = 5,
-            NextChange = 6,
-            PreviousChange = 7
+            Find,
+            GoToLine,
+            IncreaseNumberOfVisibleLines,
+            DecreaseNumberOfVisibleLines,
+            ShowEntireFile,
+            TreatFileAsText,
+            NextChange,
+            PreviousChange
         }
 
         protected override bool ExecuteCommand(int cmd)
